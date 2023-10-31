@@ -366,7 +366,7 @@ namespace CoolConsoleApp2
 
                 Console.ResetColor();
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\nЦена:{price} \nВаш торт:{Cake}");
+                Console.WriteLine($"\nЦена:{price} \nВаш пирог:{Cake}");
                 Console.ResetColor();
             }).Start();
         }
