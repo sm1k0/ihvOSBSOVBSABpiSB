@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,56 +26,66 @@ namespace CoolConsoleApp2
 
             Label = "Пироги.";
 
-            string[] options = { "Форма пирога", "Размер пирога", "Вкус пирога", "Количество пирога", "Глазурь", "Декор","Я слушаю только шамана и гимн Росиии","Конец заказа" };
+            string[] options = { "Форма пирога", "Размер пирога", "Вкус пирога", "Количество пирога", "Глазурь", "Декор", "Я слушаю только шамана и гимн Росиии", "Конец заказа" };
             Options = new List<string>(options);
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    SelectedIndex = 0;
-                    Console.Clear();
-                    MenuForm();
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            SelectedIndex = 0;
+                            Console.Clear();
+                            MenuForm();
+                            break;
+                        case 1:
+                            SelectedIndex = 0;
+                            Console.Clear();
+                            MenuSize();
+                            break;
+                        case 2:
+                            SelectedIndex = 0;
+                            Console.Clear();
+                            MenuTaste();
+                            break;
+                        case 3:
+                            SelectedIndex = 0;
+                            Console.Clear();
+                            MenuCountOfCakeSlice();
+                            break;
+                        case 4:
+                            SelectedIndex = 0;
+                            Console.Clear();
+                            MenuGlaze();
+                            break;
+                        case 5:
+                            SelectedIndex = 0;
+                            Console.Clear();
+                            MenuDecor();
+                            break;
+                        case 6:
+                            SelectedIndex = 0;
+                            Console.Clear();
+                            Shaman();
+                            break;
+                        case 7:
+                            SelectedIndex = 0;
+                            AddOrderToBook();
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine("\nЗаказ создан. Для выхода нажмите ESC.");
+                            Console.ResetColor();
+                            break;
+                    }
                     break;
-                case 1:
-                    SelectedIndex = 0;
-                    Console.Clear();
-                    MenuSize();
-                    break;
-                case 2:
-                    SelectedIndex = 0;
-                    Console.Clear();
-                    MenuTaste();
-                    break;
-                case 3:
-                    SelectedIndex = 0;
-                    Console.Clear();
-                    MenuCountOfCakeSlice();
-                    break;
-                case 4:
-                    SelectedIndex = 0;
-                    Console.Clear();
-                    MenuGlaze();
-                    break;
-                case 5:
-                    SelectedIndex = 0;
-                    Console.Clear();
-                    MenuDecor();
-                    break;
-                case 6:
-                    SelectedIndex = 0;
-                    Console.Clear();
-                    Shaman();
-                    break;
-                case 7:
-                    SelectedIndex = 0;
-                    AddOrderToBook();
-                    Console.ForegroundColor = ConsoleColor.Green;
-                    Console.WriteLine("\nЗаказ создан. Для выхода нажмите ESC.");
-                    Console.ResetColor();
-                    break;
+                }
             }
+
             ConsoleKeyInfo keyInfo = Console.ReadKey(true);
             keyPressed = keyInfo.Key;
             if (keyPressed == ConsoleKey.Escape)
@@ -94,24 +104,33 @@ namespace CoolConsoleApp2
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    price += 5;
-                    Cake += options[0] + "\n";
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            price += 5;
+                            Cake += option + "\n";
+                            break;
+                        case 1:
+                            price += 5;
+                            Cake += option + "\n";
+                            break;
+                        case 2:
+                            price += 6;
+                            Cake += option + "\n";
+                            break;
+                        case 3:
+                            price += 6;
+                            Cake += option + "\n";
+                            break;
+                    }
                     break;
-                case 1:
-                    price += 5;
-                    Cake += options[1] + "\n";
-                    break;
-                case 2:
-                    price += 6;
-                    Cake += options[2] + "\n";
-                    break;
-                case 3:
-                    price += 6;
-                    Cake += options[3] + "\n";
-                    break;
+                }
             }
 
             Console.Clear();
@@ -120,7 +139,6 @@ namespace CoolConsoleApp2
 
         private void MenuSize()
         {
-
             Label = "Размер.";
 
             string[] options = { "Маленький (Диаметр - 10 см, 10 порций) - 10", "Обычный (Диаметр - 20 см, 20 порций) - 12", "Большой (Диаметр - 30 см, 30 порций) - 20" };
@@ -128,20 +146,29 @@ namespace CoolConsoleApp2
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    price += 10;
-                    Cake += options[0] + "\n";
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            price += 10;
+                            Cake += option + "\n";
+                            break;
+                        case 1:
+                            price += 12;
+                            Cake += option + "\n";
+                            break;
+                        case 2:
+                            price += 20;
+                            Cake += option + "\n";
+                            break;
+                    }
                     break;
-                case 1:
-                    price += 12;
-                    Cake += options[1] + "\n";
-                    break;
-                case 2:
-                    price += 20;
-                    Cake += options[2] + "\n";
-                    break;
+                }
             }
 
             Console.Clear();
@@ -157,25 +184,33 @@ namespace CoolConsoleApp2
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    price = price + 1;
-                    Cake += "Количество коржей: " + options[0] + "\n";
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            price = price + 1;
+                            Cake += "Количество коржей: " + option + "\n";
+                            break;
+                        case 1:
+                            price += 2;
+                            Cake += "Количество коржей: " + option + "\n";
+                            break;
+                        case 2:
+                            price += 3;
+                            Cake += "Количество коржей: " + option + "\n";
+                            break;
+                        case 3:
+                            price += 4000000;
+                            Cake += "Количество коржей: " + option + "\n";
+                            break;
+                    }
                     break;
-                case 1:
-                    price += 2;
-                    Cake += "Количество коржей: " + options[1] + "\n";
-                    break;
-                case 2:
-                    price += 3;
-                    Cake += "Количество коржей: " + options[2] + "\n";
-                    break;
-                case 3:
-                    price += 4000000;
-                    Cake += "Количество коржей: " + options[3] + "\n";
-                    break;
-               
+                }
             }
 
             Console.Clear();
@@ -191,25 +226,33 @@ namespace CoolConsoleApp2
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    price = price + 1;
-                    Cake += options[0] + "\n";
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            price = price + 1;
+                            Cake += option + "\n";
+                            break;
+                        case 1:
+                            price += 1;
+                            Cake += option + "\n";
+                            break;
+                        case 2:
+                            price += 1;
+                            Cake += option + "\n";
+                            break;
+                        case 3:
+                            price += 1;
+                            Cake += option + "\n";
+                            break;
+                    }
                     break;
-                case 1:
-                    price += 1;
-                    Cake += options[1] + "\n";
-                    break;
-                case 2:
-                    price += 1;
-                    Cake += options[2] + "\n";
-                    break;
-                case 3:
-                    price += 1;
-                    Cake += options[3] + "\n";
-                    break;
-                
+                }
             }
 
             Console.Clear();
@@ -225,24 +268,33 @@ namespace CoolConsoleApp2
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    price = price + 3;
-                    Cake += options[0] + "\n";
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            price = price + 3;
+                            Cake += option + "\n";
+                            break;
+                        case 1:
+                            price += 2;
+                            Cake += option + "\n";
+                            break;
+                        case 2:
+                            price += 2;
+                            Cake += option + "\n";
+                            break;
+                        case 3:
+                            price += 2;
+                            Cake += option + "\n";
+                            break;
+                    }
                     break;
-                case 1:
-                    price += 2;
-                    Cake += options[1] + "\n";
-                    break;
-                case 2:
-                    price += 2;
-                    Cake += options[2] + "\n";
-                    break;
-                case 3:
-                    price += 2;
-                    Cake += options[3] + "\n";
-                    break;
+                }
             }
 
             Console.Clear();
@@ -253,37 +305,46 @@ namespace CoolConsoleApp2
         {
             Label = "Декор";
 
-            string[] options = { "Ягоды - 3", "Шоколадная крошка - 2", "Окрошка - 2", "Окошко - 2", "Баяс - 2"};
+            string[] options = { "Ягоды - 3", "Шоколадная крошка - 2", "Окрошка - 2", "Окошко - 2", "Баяс - 2" };
             Options = new List<string>(options);
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    price = price + 3;
-                    Cake += options[0] + "\n";
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            price = price + 3;
+                            Cake += option + "\n";
+                            break;
+                        case 1:
+                            price += 2;
+                            Cake += option + "\n";
+                            break;
+                        case 2:
+                            price += 2;
+                            Cake += option + "\n";
+                            break;
+                        case 3:
+                            price += 2;
+                            Cake += option + "\n";
+                            break;
+                        case 4:
+                            price += 4;
+                            Cake += option + "\n";
+                            break;
+                        case 5:
+                            price += 2;
+                            Cake += option + "\n";
+                            break;
+                    }
                     break;
-                case 1:
-                    price += 2;
-                    Cake += options[1] + "\n";
-                    break;
-                case 2:
-                    price += 2;
-                    Cake += options[2] + "\n";
-                    break;
-                case 3:
-                    price += 2;
-                    Cake += options[3] + "\n";
-                    break;
-                case 4:
-                    price += 4;
-                    Cake += options[4] + "\n";
-                    break;
-                case 5:
-                    price += 2;
-                    Cake += options[5] + "\n";
-                    break;
+                }
             }
 
             Console.Clear();
@@ -299,17 +360,26 @@ namespace CoolConsoleApp2
 
             int selectedIndex = Run();
 
-            switch (selectedIndex)
+            foreach (string option in options)
             {
-                case 0:
-                    price -= price;
+                int index = Array.IndexOf(options, option);
+
+                if (index == selectedIndex)
+                {
+                    switch (index)
+                    {
+                        case 0:
+                            price -= price;
+                            break;
+                    }
                     break;
-                
+                }
             }
 
             Console.Clear();
             Menu();
         }
+
         private void AddOrderToBook()
         {
             string order = $"{DateTime.Now}   Цена заказа: {price}. Заказ: {Cake}\n";
