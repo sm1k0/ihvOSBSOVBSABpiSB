@@ -2,464 +2,190 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace CoolConsoleApp2
+namespace ConfectioneryConsoleApp
 {
-    internal class Cakes
+    // Класс, представляющий подпункт меню
+    public class MenuItem
     {
+        public string Description { get; }
+        public decimal Price { get; }
 
-
-        private int SelectedIndex;
-        private string Label;
-        private List<string> Options;
-        private int price;
-        private string Cake;
-
-        public void Menu()
+        public MenuItem(string description, decimal price)
         {
-            Console.Clear();
+            Description = description;
+            Price = price;
+        }
+    }
 
-            ConsoleKey keyPressed;
+    // Класс, представляющий стрелочное меню
+    public static class ArrowMenu
+    {
+        public static int ShowMenu(IEnumerable<MenuItem> options, string category)
+        {
+            Console.WriteLine($"{category}\n");
 
-            Label = "Пироги.";
+            int currentPosition = 0;
 
-            string[] options = { "Форма пирога", "Размер пирога", "Вкус пирога", "Количество пирога", "Глазурь", "Декор", "Я слушаю только шамана и гимн Росиии", "Конец заказа" };
-            Options = new List<string>(options);
-
-            int selectedIndex = Run();
-
-            foreach (string option in options)
-            {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            SelectedIndex = 0;
-                            Console.Clear();
-                            MenuForm();
-                            break;
-                        case 1:
-                            SelectedIndex = 0;
-                            Console.Clear();
-                            MenuSize();
-                            break;
-                        case 2:
-                            SelectedIndex = 0;
-                            Console.Clear();
-                            MenuTaste();
-                            break;
-                        case 3:
-                            SelectedIndex = 0;
-                            Console.Clear();
-                            MenuCountOfCakeSlice();
-                            break;
-                        case 4:
-                            SelectedIndex = 0;
-                            Console.Clear();
-                            MenuGlaze();
-                            break;
-                        case 5:
-                            SelectedIndex = 0;
-                            Console.Clear();
-                            MenuDecor();
-                            break;
-                        case 6:
-                            SelectedIndex = 0;
-                            Console.Clear();
-                            Shaman();
-                            break;
-                        case 7:
-                            SelectedIndex = 0;
-                            AddOrderToBook();
-                            Console.ForegroundColor = ConsoleColor.Green;
-                            Console.WriteLine("\nЗаказ создан. Для выхода нажмите ESC.");
-                            Console.ResetColor();
-                            break;
-                    }
-                    break;
-                }
-            }
-
-            ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-            keyPressed = keyInfo.Key;
-            if (keyPressed == ConsoleKey.Escape)
+            ConsoleKeyInfo key;
+            do
             {
                 Console.Clear();
+                Console.WriteLine($"{category}\n");
+                for (int i = 0; i < options.Count(); i++)
+                {
+                    Console.WriteLine($"{(currentPosition == i ? "->" : "   ")} {options.ElementAt(i).Description} - {options.ElementAt(i).Price:C}");
+                }
+
+                key = Console.ReadKey();
+
+                if (key.Key == ConsoleKey.UpArrow && currentPosition > 0)
+                {
+                    currentPosition--;
+                }
+                else if (key.Key == ConsoleKey.DownArrow && currentPosition < options.Count() - 1)
+                {
+                    currentPosition++;
+                }
+                else if (key.Key == ConsoleKey.Escape)
+                {
+                    return -1;
+                }
+
+            } while (key.Key != ConsoleKey.Enter);
+
+            return currentPosition;
+        }
+    }
+
+    // Класс для заказа
+    public class CakeOrder
+    {
+        private decimal price;
+        private string cakeDescription;
+        private int currentMenuLevel;
+
+        private Dictionary<string, List<MenuItem>> menuOptions = new Dictionary<string, List<MenuItem>>
+        {
+            { "Форма", new List<MenuItem> { new MenuItem("Круг", 5), new MenuItem("Квадрат", 5), new MenuItem("Сердечко", 6), new MenuItem("Звездочка", 6) } },
+            { "Размер", new List<MenuItem> { new MenuItem("Маленький", 10), new MenuItem("Обычный", 12), new MenuItem("Большой", 20) } },
+            { "Количество коржей", new List<MenuItem> { new MenuItem("1", 1), new MenuItem("2", 2), new MenuItem("3", 3), new MenuItem("4", 4000000) } },
+            { "Вкус коржей", new List<MenuItem> { new MenuItem("Ванильный", 1), new MenuItem("Шоколадный", 1), new MenuItem("Карамельный", 1), new MenuItem("Ягодный", 1) } },
+            { "Вкус глазури", new List<MenuItem> { new MenuItem("Ванильная", 3), new MenuItem("Шоколадная", 2), new MenuItem("Карамельная", 2), new MenuItem("Ягодная", 2) } },
+            { "Декор", new List<MenuItem> { new MenuItem("Ягоды", 3), new MenuItem("Шоколадная крошка", 2), new MenuItem("Окрошка", 2), new MenuItem("Окошко", 2), new MenuItem("Баяс", 2) } }
+        };
+
+        public void PlaceOrder()
+        {
+            currentMenuLevel = 0;
+
+            do
+            {
+                DisplayMenuCategory(menuOptions.Keys.ElementAt(currentMenuLevel));
+
+            } while (currentMenuLevel < menuOptions.Count);
+
+            AddOrderToBook();
+
+            Console.WriteLine($"Итого: {price:C}");
+            Console.WriteLine("Заказ сохранен в файл.");
+
+            Console.Write("Желаете сделать еще заказ? (Y/N): ");
+            if (Console.ReadKey().Key == ConsoleKey.Y)
+            {
+                Console.Clear();
+                PlaceOrder();
             }
-            Menu();
         }
 
-        private void MenuForm()
+        private void DisplayMenuCategory(string category)
         {
-            Label = "Форма";
+            Console.WriteLine($"{category}\n");
 
-            string[] options = { "Круг - 5", "Квадрат - 5", "Сердечко - 6", "Звездочка - 6" };
-            Options = new List<string>(options);
-
-            int selectedIndex = Run();
-
-            foreach (string option in options)
+            for (int i = 0; i < menuOptions[category].Count; i++)
             {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            price += 5;
-                            Cake += option + "\n";
-                            break;
-                        case 1:
-                            price += 5;
-                            Cake += option + "\n";
-                            break;
-                        case 2:
-                            price += 6;
-                            Cake += option + "\n";
-                            break;
-                        case 3:
-                            price += 6;
-                            Cake += option + "\n";
-                            break;
-                    }
-                    break;
-                }
+                var option = menuOptions[category][i];
+                Console.WriteLine($"{(i == 0 ? "->" : "   ")} {option.Description} - {option.Price:C}");
             }
 
-            Console.Clear();
-            Menu();
+            int selectedIndex = ArrowMenu.ShowMenu(menuOptions[category], category);
+
+            if (selectedIndex == -1 && currentMenuLevel > 0)
+            {
+                currentMenuLevel--;
+            }
+            else if (selectedIndex != -1 && currentMenuLevel < menuOptions.Count - 1)
+            {
+                if (category == "Декор")
+                {
+                    ProcessDecorOption(menuOptions[category][selectedIndex].Description);
+                }
+                else
+                {
+                    string selectedOption = menuOptions[category][selectedIndex].Description;
+                    decimal optionPrice = menuOptions[category][selectedIndex].Price;
+
+                    price += optionPrice;
+                    cakeDescription += $"{category}: {selectedOption} - {optionPrice:C}\n";
+
+                    currentMenuLevel++;
+                }
+            }
+            else if (selectedIndex != -1 && currentMenuLevel == menuOptions.Count - 1)
+            {
+                FinishOrder();
+            }
         }
 
-        private void MenuSize()
+        private void ProcessDecorOption(string decorOption)
         {
-            Label = "Размер.";
-
-            string[] options = { "Маленький (Диаметр - 10 см, 10 порций) - 10", "Обычный (Диаметр - 20 см, 20 порций) - 12", "Большой (Диаметр - 30 см, 30 порций) - 20" };
-            Options = new List<string>(options);
-
-            int selectedIndex = Run();
-
-            foreach (string option in options)
-            {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            price += 10;
-                            Cake += option + "\n";
-                            break;
-                        case 1:
-                            price += 12;
-                            Cake += option + "\n";
-                            break;
-                        case 2:
-                            price += 20;
-                            Cake += option + "\n";
-                            break;
-                    }
-                    break;
-                }
-            }
-
-            Console.Clear();
-            Menu();
+            price += menuOptions["Декор"].Find(item => item.Description == decorOption).Price;
+            cakeDescription += $"{decorOption} - {menuOptions["Декор"].Find(item => item.Description == decorOption).Price:C}\n";
+            currentMenuLevel++;
         }
 
-        private void MenuCountOfCakeSlice()
+        private void FinishOrder()
         {
-            Label = "Количество коржей";
-
-            string[] options = { "1 - 1", "2 - 2", "3 - 3", "4 - 4000000" };
-            Options = new List<string>(options);
-
-            int selectedIndex = Run();
-
-            foreach (string option in options)
-            {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            price = price + 1;
-                            Cake += "Количество коржей: " + option + "\n";
-                            break;
-                        case 1:
-                            price += 2;
-                            Cake += "Количество коржей: " + option + "\n";
-                            break;
-                        case 2:
-                            price += 3;
-                            Cake += "Количество коржей: " + option + "\n";
-                            break;
-                        case 3:
-                            price += 4000000;
-                            Cake += "Количество коржей: " + option + "\n";
-                            break;
-                    }
-                    break;
-                }
-            }
-
             Console.Clear();
-            Menu();
-        }
 
-        private void MenuTaste()
-        {
-            Label = "Вкус коржей";
+            string order = $"{DateTime.Now}   Цена заказа: {price:C}. Заказ: {cakeDescription}\n";
+            string path = "Orders.txt";
+            File.AppendAllText(path, order);
 
-            string[] options = { "Ванильны - 1", "Шоколадный - 1", "Карамельный - 1", "Ягодный - 1" };
-            Options = new List<string>(options);
+            Console.WriteLine($"Итого: {price:C}");
+            Console.WriteLine("Заказ сохранен в файл.");
 
-            int selectedIndex = Run();
-
-            foreach (string option in options)
+            Console.Write("Желаете сделать еще заказ? (Y/N): ");
+            if (Console.ReadKey().Key == ConsoleKey.Y)
             {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            price = price + 1;
-                            Cake += option + "\n";
-                            break;
-                        case 1:
-                            price += 1;
-                            Cake += option + "\n";
-                            break;
-                        case 2:
-                            price += 1;
-                            Cake += option + "\n";
-                            break;
-                        case 3:
-                            price += 1;
-                            Cake += option + "\n";
-                            break;
-                    }
-                    break;
-                }
+                price = 0;
+                cakeDescription = "";
+                currentMenuLevel = 0;
+                Console.Clear();
+                PlaceOrder();
             }
-
-            Console.Clear();
-            Menu();
-        }
-
-        private void MenuGlaze()
-        {
-            Label = "Вкус глазури";
-
-            string[] options = { "Ванильная - 3", "Шоколадная - 2", "Карамельная - 2", "Ягодная - 2" };
-            Options = new List<string>(options);
-
-            int selectedIndex = Run();
-
-            foreach (string option in options)
+            else
             {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            price = price + 3;
-                            Cake += option + "\n";
-                            break;
-                        case 1:
-                            price += 2;
-                            Cake += option + "\n";
-                            break;
-                        case 2:
-                            price += 2;
-                            Cake += option + "\n";
-                            break;
-                        case 3:
-                            price += 2;
-                            Cake += option + "\n";
-                            break;
-                    }
-                    break;
-                }
+                Environment.Exit(0);
             }
-
-            Console.Clear();
-            Menu();
-        }
-
-        private void MenuDecor()
-        {
-            Label = "Декор";
-
-            string[] options = { "Ягоды - 3", "Шоколадная крошка - 2", "Окрошка - 2", "Окошко - 2", "Баяс - 2" };
-            Options = new List<string>(options);
-
-            int selectedIndex = Run();
-
-            foreach (string option in options)
-            {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            price = price + 3;
-                            Cake += option + "\n";
-                            break;
-                        case 1:
-                            price += 2;
-                            Cake += option + "\n";
-                            break;
-                        case 2:
-                            price += 2;
-                            Cake += option + "\n";
-                            break;
-                        case 3:
-                            price += 2;
-                            Cake += option + "\n";
-                            break;
-                        case 4:
-                            price += 4;
-                            Cake += option + "\n";
-                            break;
-                        case 5:
-                            price += 2;
-                            Cake += option + "\n";
-                            break;
-                    }
-                    break;
-                }
-            }
-
-            Console.Clear();
-            Menu();
-        }
-
-        private void Shaman()
-        {
-            Label = "Декор";
-
-            string[] options = { "Молодец заказ беспатлный " };
-            Options = new List<string>(options);
-
-            int selectedIndex = Run();
-
-            foreach (string option in options)
-            {
-                int index = Array.IndexOf(options, option);
-
-                if (index == selectedIndex)
-                {
-                    switch (index)
-                    {
-                        case 0:
-                            price -= price;
-                            break;
-                    }
-                    break;
-                }
-            }
-
-            Console.Clear();
-            Menu();
         }
 
         private void AddOrderToBook()
         {
-            string order = $"{DateTime.Now}   Цена заказа: {price}. Заказ: {Cake}\n";
-            string path = @"Orders.txt";
+            string order = $"{DateTime.Now}   Цена заказа: {price:C}. Заказ: {cakeDescription}\n";
+            string path = "Orders.txt";
             File.AppendAllText(path, order);
         }
-        private int Run()
+
+        class Program
         {
-            ConsoleKey keyPressed;
-            do
+            static void Main(string[] args)
             {
-                DisplayOptions();
+                Console.WriteLine("Добро пожаловать в кондитерскую!");
 
-                ConsoleKeyInfo keyInfo = Console.ReadKey(true);
-                keyPressed = keyInfo.Key;
-
-                UpdateSelectedIndex(keyPressed);
-            } while (keyPressed != ConsoleKey.Enter);
-
-            return SelectedIndex;
-        }
-
-        private void DisplayOptions()
-        {
-            new Thread(() =>
-            {
-                Console.SetCursorPosition(0, 0);
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine(Label);
-
-                for (int i = 0; i < Options.Capacity; i++)
-                {
-                    string currentOption = Options[i];
-
-                    if (i == SelectedIndex)
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkBlue;
-                        Console.BackgroundColor = ConsoleColor.White;
-                    }
-                    else if (i == Options.Capacity - 1)
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkBlue;
-                        Console.BackgroundColor = ConsoleColor.Black;
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkBlue;
-                        Console.BackgroundColor = ConsoleColor.Black;
-                    }
-
-                    Console.WriteLine(currentOption);
-
-                }
-
-                Console.ResetColor();
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\nЦена:{price} \nВаш пирог:{Cake}");
-                Console.ResetColor();
-            }).Start();
-        }
-
-        private void UpdateSelectedIndex(ConsoleKey keyPressed)
-        {
-            if (keyPressed == ConsoleKey.UpArrow)
-            {
-                SelectedIndex--;
-                if (SelectedIndex == -1)
-                {
-                    SelectedIndex = Options.Capacity - 1;
-                }
-            }
-            else if (keyPressed == ConsoleKey.DownArrow)
-            {
-                SelectedIndex++;
-                if (SelectedIndex == Options.Capacity)
-                {
-                    SelectedIndex = 0;
-                }
+                CakeOrder order = new CakeOrder();
+                order.PlaceOrder();
             }
         }
-
     }
 }
